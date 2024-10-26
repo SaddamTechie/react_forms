@@ -9,15 +9,65 @@ const App = () => {
     password:'',
   });
 
+
   const handleSubmit=(e)=>{
     e.preventDefault();
-    Swal.fire({
-      title:'FORM SUBMITTED',
-      icon:'success',
-      text:'Data Submitted to the server',
-      confirmButtonText:'Ok',
-    })
+    if(formData.username.trim()==="" || formData.email.trim()==="" || formData.password.trim()===""){
+      Swal.fire({
+        title:'FORM SUBMISSION ERROR',
+        icon:'error',
+        text:'Fill all fields',
+        confirmButtonText:'Ok',
+      })
+    }else{
+      if(formData.password.length < 8){
+        Swal.fire({
+          title:'FORM SUBMISSION ERROR',
+          icon:'error',
+          text:'Password should be more than 8 characters',
+          confirmButtonText:'Ok',
+        })
+      }else{
+        let users = []
+        users.push(formData)
+        const isLocalStorageEmpty = !!localStorage.getItem("users")
+        if(!isLocalStorageEmpty){
+          localStorage.setItem("users",JSON.stringify(users))
+        }else{
+          users = JSON.parse(localStorage.getItem("users"))
+          users.push(formData)
+          localStorage.setItem("users",JSON.stringify(users))
+          const lol = localStorage.getItem("users")
+          console.log(lol)
+        }
+
+        Swal.fire({
+          title:'FORM SUBMITTED',
+          icon:'success',
+          text:'Data Submitted to the server',
+          confirmButtonText:'Ok',
+        })
+      }
+      
+    }
   }
+
+/*
+  const onChange = (e) =>{
+    const {name,value} = e.target;
+    setFormData({...formData,[name]:value})
+  }
+*/
+
+const onChange = (e) =>{
+  const {name,value} = e.target;
+  setFormData((prev)=>({
+    ...prev,
+    [name]:value
+  }))
+  console.log(value)
+}
+
 
   return (
     <div className=" h-screen flex w-full justify-center items-center bg-neutral-300">
@@ -29,7 +79,7 @@ const App = () => {
           <p>Username</p>
           <input
             type="text"
-            name="username"
+            name="username" onChange={onChange}
             className="h-[40px] p-[10px]  w-full"
             placeholder="Enter username"
             style={{
@@ -41,7 +91,7 @@ const App = () => {
           <p>Email</p>
           <input
             type="email"
-            name="email"
+            name="email" onChange={onChange}
             className="h-[40px] p-[10px]  w-full"
             placeholder="Enter email"
             style={{
@@ -53,7 +103,7 @@ const App = () => {
           <p>Password</p>
           <input
             type="password"
-            name="password"
+            name="password" onChange={onChange}
             className="h-[40px] p-[10px]  w-full"
             placeholder="Enter Password"
             style={{
